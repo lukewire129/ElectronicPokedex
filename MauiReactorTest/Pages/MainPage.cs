@@ -1,7 +1,9 @@
 ﻿using MauiReactor;
 using MauiReactor.Canvas;
 using MauiReactorTest.api;
+using MauiReactorTest.Components;
 using MauiReactorTest.Models;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
@@ -12,7 +14,7 @@ public class MainPageState
 {
     public int Counter { get; set; }
     public ObservableCollection<PokeMonModel> PokeMonModels { get; set; }
-    public bool isLoading { get; set; } = true;
+    public bool isLoading { get; set; } = false;
 }
 
 public partial class MainPage : Component<MainPageState>
@@ -25,30 +27,54 @@ public partial class MainPage : Component<MainPageState>
         State.PokeMonModels = new ();
         Task.Run (async () =>
         {
-            foreach (var item in await _api.GetPocketMons (nowindex))
-            {
-                State.PokeMonModels.Add (item);
-            }
-            SetState (x => x.isLoading = false);
+            //foreach (var item in await _api.GetPocketMons (nowindex))
+            //{
+            //    State.PokeMonModels.Add (item);
+            //}
+            //SetState (x => x.isLoading = false);
         });
         base.OnMounted ();
     }
+    Header header { get; set; }
     public override VisualNode Render()
-        => ContentPage (
-            Grid (               
-                CollectionView ()
-                    .ItemsSource (State.PokeMonModels, RenderPerson)     
-                    .RemainingItemsThreshold(0)
-                    .OnRemainingItemsThresholdReached(OnLoaded)
-                    .ItemsLayout(new VerticalGridItemsLayout (span: 2))
-                    .WidthRequest(220),
+    {
+        header = new Header ();
+        return ContentPage (
+            Grid (
+                header
+                    .GridRow (0),
+                new Body ()
+                    .GridRow (1),
 
-                ActivityIndicator ()
-                    .IsRunning (State.isLoading)
-                    .VCenter ()
-                    .HCenter ()
+                GraphicsView ()
+                    .OnDraw (Draw)
+                    .GridRowSpan (2)
+                    .Margin(leftRight:20, topBottom: 0)
             )
+            .Rows ("auto, *")
+            .Background (Color.Parse ("#ca2137"))
         );
+    }
+        
+
+    private void Draw(ICanvas canvas, RectF dirtyRect)
+    {
+        float startHeight = header.GetHeight () + 20;
+        PathF path = new PathF ();
+        path.MoveTo (0, startHeight);
+        path.LineTo (dirtyRect.Width / 2 + 11, startHeight);
+
+        float lastHeight = startHeight / 2 + 11; 
+        path.LineTo (dirtyRect.Width / 2 + (dirtyRect.Width / 11) + 11, lastHeight);
+        path.LineTo (dirtyRect.Width, lastHeight);
+        path.LineTo (dirtyRect.Width, dirtyRect.Height - 20);
+        path.LineTo (0, dirtyRect.Height - 20);
+        path.Close ();
+
+        canvas.StrokeColor = Colors.Black;
+        canvas.StrokeSize = 1;
+        canvas.DrawPath (path);
+    }
 
     private void OnLoaded()
     {
@@ -71,9 +97,11 @@ public partial class MainPage : Component<MainPageState>
     {
         return Frame (
             VStack (
+                Label($"#{pokeMon.idx}"),
                 Image (new Uri (pokeMon.imageUrl))
-                        .WidthRequest (50)
-                        .HeightRequest (50),
+                        .WidthRequest (40)
+                        .HeightRequest (40)
+                        .IsAnimationPlaying(true),
 
                 Label (pokeMon.Name)
                     .VCenter ()

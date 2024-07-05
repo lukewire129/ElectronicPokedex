@@ -28,6 +28,17 @@
             HorizontalOptions="Center"
             IsRunning="{Binding IsLoading}"
             VerticalOptions="Center" />
+        <ContentView>
+            <ContentView.ControlTemplate>
+                <OnPlatform x:TypeArguments="ControlTemplate">
+                    <On Platform="Android">
+                        <On.Value>
+                            <admob:MTadView/>
+                        </On.Value>
+                    </On>
+                </OnPlatform>
+            </ContentView.ControlTemplate>
+        </ContentView>
     </Grid>
 
 </ContentPage>

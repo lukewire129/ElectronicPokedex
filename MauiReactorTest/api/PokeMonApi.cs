@@ -15,6 +15,7 @@ public interface IPokeMonApi
 
 public class PokeMonApi : IPokeMonApi
 {
+    int _index = 19;
     public async Task<List<PokeMonModel>> GetPocketMons(int idx)
     {
         var PokeMons = new List<PokeMonModel> ();
@@ -22,9 +23,9 @@ public class PokeMonApi : IPokeMonApi
         {
             BaseAddress = new System.Uri ("https://pokeapi.co")
         };
-        for (int i = 1; i <= 56; i++)
+        for (int i = 1; i <= _index; i++)
         {
-            int index = (56 * idx) + i;
+            int index = (_index * idx) + i;
             string retpokemon = await client.GetStringAsync ($"/api/v2/pokemon/{index}");
             string retpokemonName = await client.GetStringAsync ($"/api/v2/pokemon-species/{index}");
 
@@ -32,7 +33,8 @@ public class PokeMonApi : IPokeMonApi
             var temp2 = JsonConvert.DeserializeObject<pokemonName> (retpokemonName);
             PokeMons.Add (new PokeMonModel ()
             {
-                imageUrl = temp1.sprites.front_default,
+                idx = index,
+                imageUrl = temp1.sprites.versions.generationv.blackwhite.animated.front_default,
                 Name = temp2.names.FirstOrDefault (x => x.language.name == "ko").name
             });
         }
