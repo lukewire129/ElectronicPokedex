@@ -53,7 +53,7 @@ public partial class MainPage : Component<MainPageState>
             )
             .Rows ("auto, *")
             .Background (Color.Parse ("#ca2137"))
-        );
+        ).HasNavigationBar(false);
     }
         
 
