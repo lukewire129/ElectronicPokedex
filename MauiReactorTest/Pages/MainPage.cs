@@ -43,16 +43,17 @@ public partial class MainPage : Component<MainPageState>
             Grid (
                 header
                     .GridRow (0),
-                new Body ()
-                    .GridRow (1),
 
                 GraphicsView ()
                     .OnDraw (Draw)
                     .GridRowSpan (2)
-                    .Margin(leftRight:20, topBottom: 0)
+                    .Margin(leftRight:20, topBottom: 0),
+
+                new Body ()
+                    .GridRow (1)
             )
             .Rows ("auto, *")
-            .Background (Color.Parse ("#ca2137"))
+            .Background (Color.Parse ("#a44d57"))
         ).HasNavigationBar(false);
     }
         
@@ -61,14 +62,14 @@ public partial class MainPage : Component<MainPageState>
     {
         float startHeight = header.GetHeight () + 20;
         PathF path = new PathF ();
-        path.MoveTo (0, startHeight);
-        path.LineTo (dirtyRect.Width / 2 + 11, startHeight);
+        path.MoveTo (1, startHeight);
+        path.LineTo (((dirtyRect.Width / 2) - 1) + 11, startHeight);
 
         float lastHeight = startHeight / 2 + 11; 
-        path.LineTo (dirtyRect.Width / 2 + (dirtyRect.Width / 11) + 11, lastHeight);
-        path.LineTo (dirtyRect.Width, lastHeight);
-        path.LineTo (dirtyRect.Width, dirtyRect.Height - 20);
-        path.LineTo (0, dirtyRect.Height - 20);
+        path.LineTo (((dirtyRect.Width / 2) -1) + (dirtyRect.Width / 11) + 11, lastHeight);
+        path.LineTo (dirtyRect.Width - 1, lastHeight);
+        path.LineTo (dirtyRect.Width - 1, dirtyRect.Height - 20);
+        path.LineTo (1, dirtyRect.Height - 20);
         path.Close ();
 
         canvas.StrokeColor = Colors.Black;

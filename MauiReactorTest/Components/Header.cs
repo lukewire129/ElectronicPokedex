@@ -30,8 +30,8 @@ namespace MauiReactorTest.Components
         {
             _height = dirtyRect.Height;
             PathF path = new PathF ();
-            path.MoveTo (0, dirtyRect.Height);
-            path.LineTo (dirtyRect.Width / 2, dirtyRect.Height);
+            path.MoveTo (1, dirtyRect.Height - 1);
+            path.LineTo (dirtyRect.Width / 2, dirtyRect.Height -1);
             path.LineTo (dirtyRect.Width / 2 + (dirtyRect.Width / 12), dirtyRect.Height / 2);
             path.LineTo (dirtyRect.Width, dirtyRect.Height / 2);
             canvas.StrokeColor = Colors.Black;
