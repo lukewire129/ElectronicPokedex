@@ -1,10 +1,39 @@
 ﻿using MauiReactor;
 using MauiReactor.Canvas;
+using System.Collections.ObjectModel;
+using MauiReactorTest.Models;
+using MauiReactorTest.api;
+using System.Threading.Tasks;
+using System;
+using System.Diagnostics;
 
 namespace MauiReactorTest.Components;
-
-public class Body : Component
+public class BodyState
 {
+    public int Counter { get; set; }
+    public ObservableCollection<PokeMonModel> PokeMonModels { get; set; }
+    public bool isLoading { get; set; } = true;
+}
+public partial class Body : Component<BodyState>
+{
+    [Inject]
+    IPokeMonApi _api;
+    protected override void OnMounted()
+    {
+        State.PokeMonModels = new ();
+        Task.Run (async () =>
+        {
+            Debug.WriteLine (DateTime.Now);
+            foreach (var item in await _api.GetPocketMons ())
+            {
+                State.PokeMonModels.Add (item);
+            }
+            Debug.WriteLine (DateTime.Now);
+            SetState (x => x.isLoading = false);
+        });
+        base.OnMounted ();
+    }
+    private int idx=0;
     public override VisualNode Render() =>
         Grid (
             Grid (
@@ -16,11 +45,25 @@ public class Body : Component
                     .VEnd ().HEnd ()
                     .Margin (right: 30, top: 0, bottom: 20, left: 0),
 
-                Border ()
-                    .StrokeCornerRadius (3)
-                    .Background (Color.Parse ("#3f373a"))
-                    .Margin (30, 32, 30, 45)
+                    Border ()
+                        .StrokeCornerRadius (3)
+                        .Background (Color.Parse ("#3f373a"))
+                        .Margin (30, 32, 30, 45),
 
+                    State.isLoading == true?
+                        Image ()
+                            .Source ("pikachu.gif")
+                            .Margin (0, 40, 0, 50)
+                            .IsAnimationPlaying (true)
+                            .VCenter ()
+                            .HCenter()
+                        :
+                        Image()
+                            .Source (new Uri(State.PokeMonModels[idx].imageUrl))
+                            .Margin (0, 40, 0, 50)
+                            .IsAnimationPlaying (true)
+                            .VCenter ()
+                            .HCenter ()
             )
             .HeightRequest (260),
 
@@ -30,31 +73,31 @@ public class Body : Component
                     .WidthRequest (40)
                     .HeightRequest (40)
                     .VStart ()
-                    .HStart(),
-                Grid(
+                    .HStart (),
+                Grid (
                     GraphicsView ()
                         .OnDraw (InterfaceDraw)
                         .HeightRequest (200)
-                        .WidthRequest(140)
+                        .WidthRequest (140)
                         .HStart ()
                         .VStart ()
-                        .GridColumn(0),
+                        .GridColumn (0),
 
                     GraphicsView ()
                         .OnDraw (ArrowInterfaceDraw)
-                        .HeightRequest (120)
-                        .WidthRequest (120)
+                        .HeightRequest (140)
+                        .WidthRequest (130)
                         .GridColumn (1)
                         .VStart ()
                         .HEnd ()
                 )
-                .GridColumn(1)
+                .GridColumn (1)
                 .ColumnSpacing (10)
-                .Columns("*,*")
+                .Columns ("*,auto")
             )
             .ColumnSpacing (20)
-            .Columns("auto, *")
-            .GridRow(1)
+            .Columns ("auto, *")
+            .GridRow (1)
         )
         .Rows("auto, *")
         .RowSpacing(30)
