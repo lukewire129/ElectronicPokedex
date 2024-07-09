@@ -1,4 +1,7 @@
+## 환경
+Framework : .NET MAUI
+Library : MauiReactor
 
-
-https://github.com/lukewire129/MauiPokeMon/assets/54387261/7ffca9df-0ca6-4fc9-b65f-155b42bf8564
+## 동작화면
+https://github.com/lukewire129/ElectronicPokedex/assets/54387261/44200ac2-d433-4fc2-9d87-2db7b44bd6ec
 
